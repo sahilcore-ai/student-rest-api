@@ -1,0 +1,166 @@
+openapi: 3.0.3
+
+info:
+  title: Student REST API
+  description: REST API for managing student records
+  version: 1.0.0
+
+servers:
+  - url: http://127.0.0.1:5000
+    description: Local development server
+
+paths:
+
+  /healthcheck:
+    get:
+      summary: Check API health
+      responses:
+        "200":
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+
+  /api/v1/students:
+
+    get:
+      summary: Get all students
+      responses:
+        "200":
+          description: List of students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+
+    post:
+      summary: Add a new student
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentInput"
+
+      responses:
+        "201":
+          description: Student added successfully
+
+        "400":
+          description: Invalid request
+
+        "409":
+          description: Email already exists
+
+  /api/v1/students/{student_id}:
+
+    parameters:
+      - name: student_id
+        in: path
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      summary: Get student by ID
+
+      responses:
+        "200":
+          description: Student found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Student"
+
+        "404":
+          description: Student not found
+
+    put:
+      summary: Update student
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StudentInput"
+
+      responses:
+        "200":
+          description: Student updated successfully
+
+        "404":
+          description: Student not found
+
+    delete:
+      summary: Delete student
+
+      responses:
+        "200":
+          description: Student deleted successfully
+
+        "404":
+          description: Student not found
+
+
+components:
+
+  schemas:
+
+    Student:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+
+        name:
+          type: string
+          example: Rahul
+
+        email:
+          type: string
+          format: email
+          example: rahul@gmail.com
+
+        age:
+          type: integer
+          example: 25
+
+        course:
+          type: string
+          example: Data Engineering
+
+    StudentInput:
+      type: object
+      required:
+        - name
+        - email
+        - age
+        - course
+
+      properties:
+        name:
+          type: string
+          example: Rahul
+
+        email:
+          type: string
+          format: email
+          example: rahul@gmail.com
+
+        age:
+          type: integer
+          example: 25
+
+        course:
+          type: string
+          example: Data Engineering
