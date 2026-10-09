@@ -247,6 +247,70 @@ This makes it possible to introduce future versions such as:
 /api/v2/students
 ```
 
+## Docker Setup
+
+### Prerequisites
+- Docker Desktop installed and running
+- Make installed
+
+### Build the Docker image
+
+```bash
+make docker-build
+```
+
+The image is tagged with a semantic version:
+
+`student-api:1.0.0`
+
+### Initialize the database
+
+Run the migration against the persistent Docker volume:
+
+```bash
+docker run --rm \
+  -e DATABASE_URL=/data/students.db \
+  -v student-api-data:/data \
+  student-api:1.0.0 \
+  python -c "import os, sqlite3; conn=sqlite3.connect(os.environ['DATABASE_URL']); conn.executescript(open('migrations/001_create_students.sql').read()); conn.commit(); conn.close(); print('Migration completed')"
+```
+
+### Run the container
+
+```bash
+make docker-run
+```
+
+The API is available at:
+
+`http://localhost:5001`
+
+### Health check
+
+```bash
+curl http://localhost:5001/healthcheck
+```
+
+### View logs
+
+```bash
+make docker-logs
+```
+
+### Stop the container
+
+```bash
+make docker-stop
+```
+
+### Runtime environment variables
+
+The database path is provided when the container starts using:
+
+`-e DATABASE_URL=/data/students.db`
+
+The database is stored in the named Docker volume `student-api-data`.
+
 without immediately breaking existing clients.
 
 ## License
